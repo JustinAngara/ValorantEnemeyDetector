@@ -8,6 +8,8 @@ import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -24,9 +26,13 @@ import org.jnativehook.keyboard.NativeKeyEvent;
 import org.jnativehook.keyboard.NativeKeyListener;
 
 import javax.swing.JLabel;
+import javax.swing.JSlider;
+
 import java.awt.Font;
 import javax.swing.SwingConstants;
 import javax.swing.JInternalFrame;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ChangeEvent;
 	
 
 
@@ -37,6 +43,9 @@ public class DetectObject implements NativeKeyListener {
 	private Color playerBoxC; 
 	private static Random random;
 	private static JLabel lblNewLabel;
+	private static List<Cluster> clusters = new ArrayList<>();
+	private static int tolerance, maxIterations;
+
 	/**
 	 * Launch the application.
 	 */
@@ -55,6 +64,38 @@ public class DetectObject implements NativeKeyListener {
 		lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 18));
 		lblNewLabel.setBounds(0, 0, 2560, 1440);
 		frame.getContentPane().add(lblNewLabel);
+		
+		JLabel toleranceLabel = new JLabel("Tolerance: ");
+		toleranceLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		toleranceLabel.setBounds(0, 605, 200, 21);
+		frame.getContentPane().add(toleranceLabel);
+		
+		tolerance = 47;
+		
+		maxIterations = 15;
+		
+		JSlider b = new JSlider(0, 60, 35);
+
+        // set spacing
+
+        b.setMajorTickSpacing(50);
+        b.setMinorTickSpacing(5);
+        
+		b.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+				tolerance = b.getValue();
+				toleranceLabel.setText("Tolerance: "+tolerance);
+				System.out.println("tolerance value: "+b.getValue());
+			}
+		});
+		b.setBounds(0, 632, 200, 26);
+		frame.getContentPane().add(b);
+
+
+		
+		
+		
+		
 		random = new Random();
 		// look at red, and green. +-2 variation, 230 and 40 for outline
 		enemyBoxC = new Color(240,240,120);
@@ -73,15 +114,20 @@ public class DetectObject implements NativeKeyListener {
 	/**
 	 * Initialize the contents of the frame.
 	 */
+	
+	public static boolean isEnemyPixel() {
+		
+		return false;
+	}
 	public static void handleScreen(BufferedImage screenshot, Color c) {
 		// return [x,y]
 		int red,green,blue;
 		int targetRed = c.getRed();
 		int targetGreen = c.getGreen();
 		int targetBlue = c.getBlue();
-		int tolerance = 40;
+		
 		System.out.println(c);
-		int maxIterations = 15;
+		
 		for (int y = 0; y < screenshot.getHeight(); y+=2) {
 		    for (int x = 0; x < screenshot.getWidth(); x+=2) {
 		        int pixel = screenshot.getRGB(x, y);
@@ -142,7 +188,7 @@ public class DetectObject implements NativeKeyListener {
 	  // Check if pixel is within tolerance and not already marked
 	  if (Math.abs(red - targetR) <= tolerance && Math.abs(green - targetG) <= tolerance &&
 	      Math.abs(blue - targetB) <= tolerance && image.getRGB(x, y) != 0x008000) {
-		  
+		  clusters.add(new Cluster(x, y)); 
 		  
 		  image.setRGB(x, y, generateRandomColor()); // Mark the pixel (red in this case)
 
