@@ -50,7 +50,7 @@ public class Main {
 		
 		
 		
-		JLabel lblNewLabel = new JLabel("Multiverse Menu");
+		JLabel lblNewLabel = new JLabel("Valorant Chams");
 		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 31));
 		lblNewLabel.setBounds(0, 11, 684, 82);

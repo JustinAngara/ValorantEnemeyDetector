@@ -61,9 +61,11 @@ public class DetectObject implements NativeKeyListener {
 		
 		playerBoxC = new Color(255,230,64);
 		
-		t = new Timer(50,(ActionEvent e)->{
+		// fps at 75;
+		int fps = (int) Math.floor(1000/75); 
+		t = new Timer(fps,(ActionEvent e)->{
 			handleScreen(createScreenCapture(), enemyBoxC);
-		});
+		}); 
 		
 		initialize();
 	}
