@@ -65,32 +65,51 @@ public class DetectObject implements NativeKeyListener {
 		lblNewLabel.setBounds(0, 0, 2560, 1440);
 		frame.getContentPane().add(lblNewLabel);
 		
-		JLabel toleranceLabel = new JLabel("Tolerance: ");
+		tolerance = 47;
+
+		maxIterations = 15;
+		
+		JLabel toleranceLabel = new JLabel("Tolerance: "+tolerance);
 		toleranceLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		toleranceLabel.setBounds(0, 605, 200, 21);
 		frame.getContentPane().add(toleranceLabel);
 		
-		tolerance = 47;
-		
-		maxIterations = 15;
-		
-		JSlider b = new JSlider(0, 60, 35);
+		JSlider toleranceSlider = new JSlider(0, 60, 35);
 
         // set spacing
 
-        b.setMajorTickSpacing(50);
-        b.setMinorTickSpacing(5);
+		toleranceSlider.setMajorTickSpacing(50);
+		toleranceSlider.setMinorTickSpacing(5);
         
-		b.addChangeListener(new ChangeListener() {
+		toleranceSlider.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
-				tolerance = b.getValue();
+				tolerance = toleranceSlider.getValue();
 				toleranceLabel.setText("Tolerance: "+tolerance);
-				System.out.println("tolerance value: "+b.getValue());
+				
 			}
 		});
-		b.setBounds(0, 632, 200, 26);
-		frame.getContentPane().add(b);
+		toleranceSlider.setBounds(0, 632, 200, 26);
+		frame.getContentPane().add(toleranceSlider);
+		
+		
 
+		JLabel lblMaxIterations = new JLabel("Max Iterations: "+maxIterations);
+		lblMaxIterations.setHorizontalAlignment(SwingConstants.CENTER);
+		lblMaxIterations.setBounds(232, 605, 200, 21);
+		frame.getContentPane().add(lblMaxIterations);
+		
+		JSlider maxIterationSlider = new JSlider(0, 35, 15);
+		maxIterationSlider.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+				maxIterations = maxIterationSlider.getValue();
+				lblMaxIterations.setText("Max Iterations: "+maxIterationSlider.getValue());
+			}
+		});
+		maxIterationSlider.setMinorTickSpacing(5);
+		maxIterationSlider.setMajorTickSpacing(50);
+		maxIterationSlider.setBounds(232, 632, 200, 26);
+		frame.getContentPane().add(maxIterationSlider);
+		
 
 		
 		
@@ -122,6 +141,7 @@ public class DetectObject implements NativeKeyListener {
 	public static void handleScreen(BufferedImage screenshot, Color c) {
 		// return [x,y]
 		int red,green,blue;
+		int offset = 1;
 		int targetRed = c.getRed();
 		int targetGreen = c.getGreen();
 		int targetBlue = c.getBlue();
@@ -142,21 +162,23 @@ public class DetectObject implements NativeKeyListener {
 		            Math.abs(green - targetGreen) <= tolerance &&
 		            Math.abs(blue - targetBlue) <= tolerance) {
 
-		        	floodFill(screenshot, x, y, targetRed, targetGreen, targetBlue, tolerance, maxIterations);
-//		        	
-//		        	// Calculate valid offsets based on image dimensions
-//		            int minXOffset = Math.max(-3, -x); // Don't go below 0 (left edge)
-//		            int maxXOffset = Math.min(3, screenshot.getWidth() - x - 1); // Don't go above width-1 (right edge)
-//		            int minYOffset = Math.max(-3, -y); // Don't go below 0 (top edge)
-//		            int maxYOffset = Math.min(3, screenshot.getHeight() - y - 1); // Don't go above height-1 (bottom edge)
-//
-//		            // Loop through valid offsets and set pixels
-//		            for (int offsetX = minXOffset; offsetX <= maxXOffset; offsetX++) {
-//		              for (int offsetY = minYOffset; offsetY <= maxYOffset; offsetY++) {
-//		                screenshot.setRGB(x + offsetX, y + offsetY, 0x008000);
-//		              }
-//		            }
+//		        	floodFill(screenshot, x, y, targetRed, targetGreen, targetBlue, maxIterations);
 		        	
+//		        	// Calculate valid offsets based on image dimensions
+
+/*
+		        	int minXOffset = Math.max(-offset, -x); // Don't go below 0 (left edge)
+		            int maxXOffset = Math.min(offset, screenshot.getWidth() - x - 1); // Don't go above width-1 (right edge)
+		            int minYOffset = Math.max(-offset, -y); // Don't go below 0 (top edge)
+		            int maxYOffset = Math.min(offset, screenshot.getHeight() - y - 1); // Don't go above height-1 (bottom edge)
+
+		            // Loop through valid offsets and set pixels
+		            for (int offsetX = minXOffset; offsetX <= maxXOffset; offsetX++) {
+		              for (int offsetY = minYOffset; offsetY <= maxYOffset; offsetY++) {
+		                screenshot.setRGB(x + offsetX, y + offsetY, 0x008000);
+		              }
+		            }
+*/
 		            System.out.println(screenshot.getHeight());
 		            System.out.println("Y VAlUE AT DETECTION: "+y);
 		        }
@@ -175,7 +197,7 @@ public class DetectObject implements NativeKeyListener {
 	  return 0 | (green << 8) | 0;
 	}
 	// Flood fill function (recursive)
-	private static void floodFill(BufferedImage image, int x, int y, int targetR, int targetG, int targetB, int tolerance, int iterations) {
+	private static void floodFill(BufferedImage image, int x, int y, int targetR, int targetG, int targetB, int iterations) {
 	  if (iterations <= 0 || x < 0 || x >= image.getWidth() || y < 0 || y >= image.getHeight()) {
 	    return; // Base case: out of bounds or max iterations reached
 	  }
@@ -194,15 +216,15 @@ public class DetectObject implements NativeKeyListener {
 
 	    // Recursively fill adjacent pixels (limited iterations)
 	    
-	    floodFill(image, x + 1, y, targetR, targetG, targetB, tolerance, iterations - 1);
-	    floodFill(image, x - 1, y, targetR, targetG, targetB, tolerance, iterations - 1);
-	    floodFill(image, x, y + 1, targetR, targetG, targetB, tolerance, iterations - 1);
-	    floodFill(image, x, y - 1, targetR, targetG, targetB, tolerance, iterations - 1);
+	    floodFill(image, x + 1, y, targetR, targetG, targetB, iterations - 1);
+	    floodFill(image, x - 1, y, targetR, targetG, targetB, iterations - 1);
+	    floodFill(image, x, y + 1, targetR, targetG, targetB, iterations - 1);
+	    floodFill(image, x, y - 1, targetR, targetG, targetB, iterations - 1);
 
-	    floodFill(image, x + 1, y + 1, targetR, targetG, targetB, tolerance, iterations - 1);
-	    floodFill(image, x - 1, y + 1, targetR, targetG, targetB, tolerance, iterations - 1);
-	    floodFill(image, x + 1, y - 1, targetR, targetG, targetB, tolerance, iterations - 1);
-	    floodFill(image, x - 1, y - 1, targetR, targetG, targetB, tolerance, iterations - 1);
+	    floodFill(image, x + 1, y + 1, targetR, targetG, targetB, iterations - 1);
+	    floodFill(image, x - 1, y + 1, targetR, targetG, targetB, iterations - 1);
+	    floodFill(image, x + 1, y - 1, targetR, targetG, targetB, iterations - 1);
+	    floodFill(image, x - 1, y - 1, targetR, targetG, targetB, iterations - 1);
 	  }
 	}
 	
