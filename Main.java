@@ -1,5 +1,6 @@
 package com.chms.main;
 
+import java.awt.AWTException;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -15,7 +16,8 @@ import java.awt.event.ActionEvent;
 public class Main {
 
 	private JFrame frame;
-	DetectObject detectObj;
+	private DetectObject detectObj;
+	private Map mapObj;
 	/**
 	 * Launch the application.
 	 */
@@ -59,7 +61,14 @@ public class Main {
 		JButton btnNewButton = new JButton("Start");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				
 				detectObj = new DetectObject();
+				try {
+					mapObj = new Map();
+				} catch (AWTException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				
 //				detectObj.runNativeHook();
 			}
