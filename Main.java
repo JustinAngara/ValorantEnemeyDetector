@@ -18,6 +18,7 @@ public class Main {
 	private JFrame frame;
 	private DetectObject detectObj;
 	private Map mapObj;
+	private Fire fire;
 	/**
 	 * Launch the application.
 	 */
@@ -63,13 +64,9 @@ public class Main {
 			public void actionPerformed(ActionEvent e) {
 				
 				detectObj = new DetectObject();
-				try {
-					mapObj = new Map();
-				} catch (AWTException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				
+
+//				fire = new Fire();
+//				fire.run();
 //				detectObj.runNativeHook();
 			}
 		});
