@@ -25,17 +25,21 @@ import javax.swing.border.LineBorder;
 import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.ptr.IntByReference;
+import java.awt.SystemColor;
 
 
 
 public class Fire {
-	private static Timer t;
+	private static Timer u;
+	
 	private static JFrame frame;
 	static File f;
 	int screenWidth;
 	int screenHeight;
-
-	static boolean isButtonDown;
+	private static JPanel panel;
+	private static boolean isButtonDown;
+	private static JLabel lblNewLabel;
+	private static int shot; // tracks shots
 
 	static interface User32 extends Library {
 	    @SuppressWarnings("deprecation")
@@ -84,49 +88,78 @@ public class Fire {
 	    byte[] keystate = new byte[256];
 	    User32.INSTANCE.GetKeyboardState(keystate); 
 	    if(isButtonDown) {
-	    	t.start();
+	    	// starts up timer
+	    	lblNewLabel.setVisible(true);
+	    	u.start();
 	    	
 	    } else {
-	   
-	    	t.stop();
+	    	// stops up timer
+	    	shot=0;
+	    	panel.setBounds((2560/2)-10, (1440/2)-10, 20, 20);
+	    	lblNewLabel.setVisible(false);
+	    	u.stop();
 	    }
 	    return isButtonDown;
 	}
 	public static void main(String[] args) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
 //		run();
-		f = new File("C:\\Users\\justi\\eclipse-workspace\\JustinProgram\\sounds\\ak.wav");
-		int fps = (int) Math.floor(1000/8.75); 
-		t = new Timer(0,(ActionEvent e)->{
+		
+		f = new File("C:\\Users\\justi\\eclipse-workspace\\JustinProgram\\sounds\\ABshot.wav");
+		int fps = (int) Math.floor(1000/(2*9.75)); 
+		
+//		AudioInputStream audioIn = AudioSystem.getAudioInputStream(f.toURI().toURL()); 
+		u = new Timer(0,(ActionEvent e)->{
+			shot++;
+		
+			System.out.println(panel.getY());
+			if(!(panel.getY() < 645)) {
+				panel.setBounds(panel.getX(), panel.getY()-5, panel.getHeight(), panel.getWidth());	
+			} else {
+				// start the left and right timer
+			}
 			
-			System.out.println("NOW");
+			/*
 			try {
 				playSound();
 			} catch (LineUnavailableException | IOException | UnsupportedAudioFileException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			t.setDelay(fps);
+			*/
+			u.setDelay(fps);
 		}); 
-//		frame = new JFrame();
-//		frame.setBounds(0, 0, 2560, 1440);
-//		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//		frame.getContentPane().setLayout(new GridBagLayout());
-//		frame.getRootPane().putClientProperty("apple.awt.draggableWindowBackground", false);
-//		
-//		Icon icon;
-//		// niko v3 crosshair - good
-//		
-//		icon = new ImageIcon("C:\\Users\\justi\\eclipse-workspace\\JustinProgram\\image\\simple crosshair.PNG");
-//		JLabel lblNewLabel = new JLabel(icon);
-//		
-//		frame.getContentPane().add(lblNewLabel);
-//		System.out.println(lblNewLabel.getBounds());
-//		frame.setUndecorated(true);
-//		frame.setAlwaysOnTop(true);
-//		frame.setBackground(new Color(0, 0, 0, 0));
-//		frame.setFocusable(false);
-//		
-//		frame.setVisible(true);
+		frame = new JFrame();
+		frame.setBounds(0, 0, 2560, 1440);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getRootPane().putClientProperty("apple.awt.draggableWindowBackground", false);
+		
+		frame.setUndecorated(true);
+		frame.setAlwaysOnTop(true);
+		frame.setBackground(new Color(0, 0, 0, 0));
+		frame.setFocusable(false);
+		frame.getContentPane().setLayout(null);
+		
+		
+		// this is for crosshair panel
+		panel = new JPanel();
+		panel.setBackground(new Color(0,0,0,0));
+		panel.setBounds((2560/2)-10, (1440/2)-10, 20, 20);
+		frame.getContentPane().add(panel);
+		panel.setLayout(null);
+		
+		Icon icon;
+		// niko v3 crosshair - good
+		
+		icon = new ImageIcon("C:\\Users\\justi\\eclipse-workspace\\JustinProgram\\image\\Custom Crosshairt.PNG");
+		frame.getContentPane().setLayout(null);
+		lblNewLabel = new JLabel(icon);
+		lblNewLabel.setBounds(0, 0, 20, 20);
+	
+		panel.add(lblNewLabel);
+		
+		
+		
+		frame.setVisible(true);
 		run();
 		
 	}
@@ -137,5 +170,5 @@ public class Fire {
 	    clip.open(audioIn);
 	    clip.start();
 	}
-	
+	//70 first
 }
