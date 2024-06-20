@@ -31,16 +31,21 @@ import java.awt.SystemColor;
 
 public class Fire {
 	private static Timer u;
-	
+	private static Timer h;
 	private static JFrame frame;
+	static int fps = (int) Math.floor(1000/(9.75)); 
 	static File f;
 	int screenWidth;
 	int screenHeight;
 	private static JPanel panel;
-	private static boolean isButtonDown;
 	private static JLabel lblNewLabel;
 	private static int shot; // tracks shots
-
+	private static String str2 = "C:\\Users\\justi\\eclipse-workspace\\JustinProgram\\image\\Dot crosshair.PNG";
+	private static String str1 = "C:\\Users\\justi\\eclipse-workspace\\JustinProgram\\image\\Dot crosshair 2.PNG";
+	private static Icon icon1;
+	private static Icon icon2;
+	private static int yPos, xPos;
+	private static byte[] keystate = new byte[256];
 	static interface User32 extends Library {
 	    @SuppressWarnings("deprecation")
 		public static User32 INSTANCE = (User32) Native.loadLibrary("User32", User32.class); 
@@ -57,67 +62,41 @@ public class Fire {
 
 	}
 
-	public static void run() throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-	    long currTime = System.currentTimeMillis();
 
-	    while (System.currentTimeMillis() < currTime + 2000000)
-	    {
-	        for (int key = 1; key < 256; key++)
-	            {
-	                if (isKeyPressed(key)) {
-	                    getKeyType(key);
-	                    
-	                }
-	                if(!isKeyPressed(key)) {
-	                	getKeyType(key);
-	                	
-	                }
-	            }
-	    }
-	}
+	private static void getKeyType(int key) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+
 	
-	private static boolean isKeyPressed(int key) {
-	    return User32.INSTANCE.GetAsyncKeyState(key) == -32767;
-	}
-
-
-
-	private static boolean getKeyType(int key) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-		int keyCode1=MouseEvent.BUTTON1;
-		isButtonDown = (User32.INSTANCE.GetKeyState(keyCode1) & 0x80) == 0x80;
-	    byte[] keystate = new byte[256];
-	    User32.INSTANCE.GetKeyboardState(keystate); 
-	    if(isButtonDown) {
+		// checks if mouse1 is getting clicked
+	    if((User32.INSTANCE.GetKeyState(MouseEvent.BUTTON1) & 0x80) == 0x80) {
 	    	// starts up timer
 	    	lblNewLabel.setVisible(true);
+	    	u.setDelay(fps);
 	    	u.start();
 	    	
 	    } else {
 	    	// stops up timer
-	    	shot=0;
-	    	panel.setBounds((2560/2)-10, (1440/2)-10, 20, 20);
-	    	lblNewLabel.setVisible(false);
 	    	u.stop();
+	    	panel.setBounds(xPos = (2560/2)-10, yPos = (1440/2)-10, 20, 20);
+	    	
+	    	lblNewLabel.setVisible(false);
+	    	u.setDelay(0);
 	    }
-	    return isButtonDown;
+
 	}
 	public static void main(String[] args) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
 //		run();
+		icon1 = new ImageIcon(str1);
+		icon2 = new ImageIcon(str2);
+//		f = new File("C:\\Users\\justi\\eclipse-workspace\\JustinProgram\\sounds\\ABshot.wav");
 		
-		f = new File("C:\\Users\\justi\\eclipse-workspace\\JustinProgram\\sounds\\ABshot.wav");
-		int fps = (int) Math.floor(1000/(2*9.75)); 
 		
 //		AudioInputStream audioIn = AudioSystem.getAudioInputStream(f.toURI().toURL()); 
 		u = new Timer(0,(ActionEvent e)->{
-			shot++;
-		
-			System.out.println(panel.getY());
-			if(!(panel.getY() < 645)) {
-				panel.setBounds(panel.getX(), panel.getY()-5, panel.getHeight(), panel.getWidth());	
-			} else {
-				// start the left and right timer
-			}
 			
+			if(!(yPos < 645)) {
+				panel.setBounds(xPos, yPos-=8, 20, 20);	
+			}
+
 			/*
 			try {
 				playSound();
@@ -126,8 +105,22 @@ public class Fire {
 				e1.printStackTrace();
 			}
 			*/
-			u.setDelay(fps);
+			
 		}); 
+		
+		
+		
+		int direction = 1;
+		h = new Timer(0,(ActionEvent e)->{
+			// first turn right
+//			if (panel.getX() < pixels to right)
+			// dir = 1
+			// else
+			// dir = -1
+			// panel.getX()+5;
+			
+			h.setDelay(fps);
+		});
 		frame = new JFrame();
 		frame.setBounds(0, 0, 2560, 1440);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -139,20 +132,22 @@ public class Fire {
 		frame.setFocusable(false);
 		frame.getContentPane().setLayout(null);
 		
-		
+		yPos = (2560/2)-10;
+		xPos = (1440/2)-10;
 		// this is for crosshair panel
 		panel = new JPanel();
 		panel.setBackground(new Color(0,0,0,0));
-		panel.setBounds((2560/2)-10, (1440/2)-10, 20, 20);
+		panel.setBounds(yPos, xPos, 20, 20);
 		frame.getContentPane().add(panel);
 		panel.setLayout(null);
-		
-		Icon icon;
+
 		// niko v3 crosshair - good
 		
-		icon = new ImageIcon("C:\\Users\\justi\\eclipse-workspace\\JustinProgram\\image\\Custom Crosshairt.PNG");
+
+		
+		
 		frame.getContentPane().setLayout(null);
-		lblNewLabel = new JLabel(icon);
+		lblNewLabel = new JLabel(icon1);
 		lblNewLabel.setBounds(0, 0, 20, 20);
 	
 		panel.add(lblNewLabel);
@@ -160,9 +155,14 @@ public class Fire {
 		
 		
 		frame.setVisible(true);
-		run();
+		
+	    while (true) {
+	        getKeyType(0x80);
+	    }
+	
 		
 	}
+	/*
 	public static void playSound() throws LineUnavailableException, IOException, UnsupportedAudioFileException {
 	    
 	    AudioInputStream audioIn = AudioSystem.getAudioInputStream(f.toURI().toURL());  
@@ -170,5 +170,6 @@ public class Fire {
 	    clip.open(audioIn);
 	    clip.start();
 	}
+	*/
 	//70 first
 }
