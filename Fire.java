@@ -33,6 +33,7 @@ public class Fire {
 	private static Timer u;
 	private static Timer h;
 	private static JFrame frame;
+	private static boolean isOn;
 	static int fps = (int) Math.floor(1000/(9.75)); 
 	static File f;
 	int screenWidth;
@@ -45,7 +46,7 @@ public class Fire {
 	private static Icon icon1;
 	private static Icon icon2;
 	private static int yPos, xPos;
-	private static byte[] keystate = new byte[256];
+
 	static interface User32 extends Library {
 	    @SuppressWarnings("deprecation")
 		public static User32 INSTANCE = (User32) Native.loadLibrary("User32", User32.class); 
@@ -69,16 +70,18 @@ public class Fire {
 		// checks if mouse1 is getting clicked
 	    if((User32.INSTANCE.GetKeyState(MouseEvent.BUTTON1) & 0x80) == 0x80) {
 	    	// starts up timer
-	    	lblNewLabel.setVisible(true);
+	    	
 	    	u.setDelay(fps);
-	    	u.start();
+	    	isOn=true;
+	    	
 	    	
 	    } else {
 	    	// stops up timer
-	    	u.stop();
-	    	panel.setBounds(xPos = (2560/2)-10, yPos = (1440/2)-10, 20, 20);
-	    	
-	    	lblNewLabel.setVisible(false);
+	    	xPos = (2560/2)-10;
+	    	yPos = (1440/2)-10;
+	    	panel.setBounds(-3000, -3000, 2560, 1440);
+	    	isOn=false;
+
 	    	u.setDelay(0);
 	    }
 
@@ -93,7 +96,7 @@ public class Fire {
 //		AudioInputStream audioIn = AudioSystem.getAudioInputStream(f.toURI().toURL()); 
 		u = new Timer(0,(ActionEvent e)->{
 			
-			if(!(yPos < 645)) {
+			if(!(yPos < 645) && isOn) {
 				panel.setBounds(xPos, yPos-=8, 20, 20);	
 			}
 
@@ -155,7 +158,7 @@ public class Fire {
 		
 		
 		frame.setVisible(true);
-		
+		u.start();
 	    while (true) {
 	        getKeyType(0x80);
 	    }
