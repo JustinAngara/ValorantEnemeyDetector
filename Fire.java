@@ -21,20 +21,26 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 
 import javax.swing.border.LineBorder;
+import jnr.ffi.LibraryLoader;
 
 import com.sun.jna.Library;
 import com.sun.jna.Native;
+import com.sun.jna.platform.win32.WinDef.DWORD;
+import com.sun.jna.platform.win32.WinUser.INPUT;
 import com.sun.jna.ptr.IntByReference;
 import java.awt.SystemColor;
 
-
+import com.sun.jna.platform.win32.BaseTSD;
+import com.sun.jna.platform.win32.User32;
+import com.sun.jna.platform.win32.WinDef;
+import com.sun.jna.platform.win32.WinUser;
 
 public class Fire {
 	private static Timer u;
 	private static Timer h;
 	private static JFrame frame;
 	private static boolean isOn;
-	static int fps = (int) Math.floor(1000/(9.75)); 
+	static int fps = (int) Math.floor(1000/(9)); 
 	static File f;
 	int screenWidth;
 	int screenHeight;
@@ -60,11 +66,13 @@ public class Fire {
 	    boolean GetKeyboardState(byte[] lpKeyState);
 
 	    int ToUnicodeEx(int wVirtKey, int wScanCode, byte[] lpKeyState, char[] pwszBuff, int cchBuff, int wFlags, IntByReference dwhkl);
+	 
+        int SendInput(DWORD dword, INPUT[] pInputs, int cbSize);
 
 	}
 
 
-	private static void getKeyType(int key) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+	private static void getKeyType() throws LineUnavailableException, IOException, UnsupportedAudioFileException {
 
 	
 		// checks if mouse1 is getting clicked
@@ -77,15 +85,16 @@ public class Fire {
 	    	
 	    } else {
 	    	// stops up timer
-	    	xPos = (2560/2)-10;
-	    	yPos = (1440/2)-10;
-	    	panel.setBounds(-3000, -3000, 2560, 1440);
-	    	isOn=false;
-
-	    	u.setDelay(0);
+//	    	xPos = (2560/2)-10;
+//	    	yPos = (1440/2)-10;
+//	    	panel.setBounds(-3000, -3000, 2560, 1440);
+//	    	isOn=false;
+//
+//	    	u.setDelay(0);
 	    }
 
 	}
+	
 	public static void main(String[] args) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
 //		run();
 		icon1 = new ImageIcon(str1);
@@ -97,7 +106,7 @@ public class Fire {
 		u = new Timer(0,(ActionEvent e)->{
 			
 			if(!(yPos < 645) && isOn) {
-				panel.setBounds(xPos, yPos-=8, 20, 20);	
+//				panel.setBounds(xPos, yPos-=8, 20, 20);	
 			}
 
 			/*
@@ -135,12 +144,12 @@ public class Fire {
 		frame.setFocusable(false);
 		frame.getContentPane().setLayout(null);
 		
-		yPos = (2560/2)-10;
-		xPos = (1440/2)-10;
+		yPos = (1440/2)-10;
+		xPos = (2560/2)-10;
 		// this is for crosshair panel
 		panel = new JPanel();
-		panel.setBackground(new Color(0,0,0,0));
-		panel.setBounds(yPos, xPos, 20, 20);
+		panel.setBackground(new Color(0,0,0));
+		panel.setBounds(xPos, yPos, 20, 20);
 		frame.getContentPane().add(panel);
 		panel.setLayout(null);
 
@@ -158,13 +167,15 @@ public class Fire {
 		
 		
 		frame.setVisible(true);
+	
 		u.start();
 	    while (true) {
-	        getKeyType(0x80);
+	    	
+	        getKeyType();
 	    }
-	
-		
+
 	}
+
 	/*
 	public static void playSound() throws LineUnavailableException, IOException, UnsupportedAudioFileException {
 	    

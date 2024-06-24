@@ -6,6 +6,14 @@ import com.sun.jna.platform.win32.WinDef.DWORD;
 import com.sun.jna.platform.win32.WinDef.WORD;
 import com.sun.jna.platform.win32.WinUser.INPUT;
 
+
+import com.sun.jna.platform.win32.User32;
+
+import com.sun.jna.platform.win32.BaseTSD.ULONG_PTR;
+import com.sun.jna.platform.win32.WinDef.DWORD;
+import com.sun.jna.platform.win32.WinDef.WORD;
+import com.sun.jna.platform.win32.WinUser.INPUT;
+
 /**
  * Keyboard related methods and values.
  */
@@ -82,8 +90,7 @@ public class Keyboard {
 		User32.INSTANCE.SendInput(new DWORD(1), (INPUT[]) input.toArray(1), input.size());
 	}
 	public static void main(String[] args) throws InterruptedException {
-		Thread.sleep(2500);
-		sendKeyDown(0x004F);
-		sendKeyUp(0x004F);
+		Thread.sleep(1000);
+		sendKeyDown(0x57);
 	}
 }
